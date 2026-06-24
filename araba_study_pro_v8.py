@@ -155,7 +155,7 @@ fig = px.scatter(
     text=cluster_data.index
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 # =========================
 # MAPA INTELIGENTE
@@ -180,18 +180,18 @@ map_df["lon"] = map_df["Municipio"].map(lambda x: coords.get(x,(None,None))[1])
 
 map_df = map_df.dropna()
 
-fig = px.scatter_mapbox(
+fig = px.scatter_map(
     map_df,
     lat="lat",
     lon="lon",
     size="Certificados",
     color="Score",
     zoom=7,
-    mapbox_style="carto-positron",
+    map_style="carto-positron",
     hover_name="Municipio"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 # =========================
 # RANKING ULTRA PRO
@@ -212,7 +212,7 @@ st.plotly_chart(
         color="Score",
         color_continuous_scale="RdYlGn"
     ),
-    use_container_width=True
+    width='stretch'
 )
 
 # =========================
