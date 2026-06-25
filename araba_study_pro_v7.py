@@ -534,6 +534,12 @@ with tab3:
 with tab4:
 
     st.subheader("🧠 Clustering de municipios")
+    st.markdown(
+        """
+        Esta visualización muestra un clustering de los municipios según su consumo anual, emisiones anuales y score energético. 
+        Permite identificar grupos de municipios con características similares en términos de eficiencia energética.
+        """
+    )   
 
     cluster_data = df.groupby("Municipio").agg({
     "Consumo anual":"mean",
