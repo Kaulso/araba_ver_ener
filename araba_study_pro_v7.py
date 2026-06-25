@@ -199,7 +199,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
 
 with tab1:
 
-    st.subheader("¿Por que es importante este estudio?")
+    st.subheader("❓¿Por que es importante este estudio?")
     st.markdown(
         """
         Bienvenido al dashboard de certificados energéticos de Álava. 
@@ -209,13 +209,7 @@ with tab1:
         """
     )
 
-    st.image(
-        "ALAVA-ARABA_Mapa_Político_2019.png",
-        caption="Fuente: Wikipedia",
-        width=700
-    )
-    
-    st.subheader("Índice de contenidos")
+    st.subheader("🚦Índice de contenidos")
     st.markdown(
         """
         1. **Resumen**: Visualización de la calificación energética de los edificios.
@@ -229,6 +223,91 @@ with tab1:
         """
     )
 
+    st.subheader("🗺️ Mapa Energético de Álava")
+
+    st.markdown("""
+    Este mapa representa el score energético medio de cada municipio.
+
+    - 🟢 Verde = municipios más eficientes
+    - 🟡 Amarillo = eficiencia media
+    - 🔴 Rojo = municipios menos eficientes
+    """)
+
+    ranking_mapa = (
+        df.groupby("Municipio")
+        .agg(
+            Score=("Score energético", "mean"),
+            Certificados=("Municipio", "count"),
+            Consumo=("Consumo anual", "mean"),
+            Emisiones=("Emisiones anuales", "mean")
+        )
+        .reset_index()
+    )
+
+    try:
+
+        geo = gpd.read_file("municipios_alava.geojson")
+
+        # IMPORTANTE:
+        # Cambiar MUNICIPIO por el nombre real
+        # de la columna que tenga el GeoJSON
+        geo["Municipio"] = geo["MUNICIPIO"]
+
+        geo = geo.merge(
+            ranking_mapa,
+            on="Municipio",
+            how="left"
+        )
+
+        m = folium.Map(
+            location=[42.85, -2.68],
+            zoom_start=8,
+            tiles="CartoDB Positron"
+        )
+
+        folium.Choropleth(
+            geo_data=geo,
+            data=geo,
+            columns=["Municipio", "Score"],
+            key_on="feature.properties.Municipio",
+            fill_color="RdYlGn",
+            fill_opacity=0.8,
+            line_opacity=0.4,
+            legend_name="Score energético medio"
+        ).add_to(m)
+
+        folium.GeoJson(
+            geo,
+            tooltip=folium.GeoJsonTooltip(
+                fields=[
+                    "Municipio",
+                    "Score",
+                    "Certificados",
+                    "Consumo",
+                    "Emisiones"
+                ],
+                aliases=[
+                    "Municipio:",
+                    "Score:",
+                    "Certificados:",
+                    "Consumo medio:",
+                    "Emisiones medias:"
+                ]
+            )
+        ).add_to(m)
+
+        st_folium(
+            m,
+            width=1200,
+            height=700
+        )
+
+    except Exception as e:
+
+        st.error(
+            f"Error cargando el mapa: {e}"
+        )
+    
 
 # ==================================================
 # TAB 2 - RESUMEN
@@ -333,20 +412,27 @@ with tab3:
     st.divider()
 
     st.subheader("Mapa interactivo de municipios")
+    st.markdown(
+        """
+
+        Este mapa interactivo muestra la ubicación de los municipios de Álava y permite visualizar el score energético promedio de cada municipio.
+        Al hacer clic en un municipio, se puede ver información detallada sobre el score energético, la cantidad de certificados, el consumo medio y las emisiones medias.
+        """
+    )
 
     # Coordenadas aproximadas de municipios principales de Álava
     coords = {
-        "Vitoria-Gasteiz": (42.8467, -2.6726),
-        "Amurrio": (43.0526, -3.0007),
-        "Laudio/Llodio": (43.1430, -2.9630),
-        "Agurain/Salvatierra": (42.8500, -2.3900),
-        "Alegría-Dulantzi": (42.9390, -2.5140),
-        "Araia": (42.8950, -2.3130),
-        "Artziniega": (43.1220, -3.1280),
-        "Labastida": (42.5900, -2.7930),
-        "Laguardia": (42.5540, -2.5850),
-        "Oion": (42.5060, -2.4360),
-        "Zuia": (42.9550, -2.8190)
+        "Vitoria-Gasteiz": (42.8467, -2.6716),
+        "Amurrio": (43.0540, -3.0016),
+        "Laudio/Llodio": (43.1433, -2.9627),
+        "Agurain/Salvatierra": (42.8512, -2.3896),
+        "Alegría-Dulantzi": (42.8418, -2.5139),
+        "Araia": (42.8938, -2.3124),
+        "Artziniega": (43.1219, -3.1274),
+        "Labastida": (42.5907, -2.7698),
+        "Laguardia": (42.5546, -2.5856),
+        "Oion": (42.5067, -2.4369),
+        "Zuia (Murgia)": (42.9636, -2.8197)
     }
 
     mapa = (
@@ -409,6 +495,12 @@ with tab3:
         )
 
     st.subheader("Mapa de calor: Municipio vs Calificación")
+    st.markdown(
+        """             
+    Este mapa de calor muestra la relación entre los municipios y la calificación energética de los edificios.
+    Permite identificar qué calificaciones son más comunes en cada municipio y cómo se distribuyen los edificios según su eficiencia energética.
+        """
+        )
 
     heat = pd.crosstab(
         df["Municipio"],
@@ -429,6 +521,12 @@ with tab3:
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Mapa de calor: Consumo vs Emisiones")
+    st.markdown(
+        """
+    Este gráfico muestra la densidad de edificios en función de su consumo anual y sus emisiones de CO2.
+    Permite observar la correlación entre ambos parámetros y detectar grupos de edificios con comportamientos similares.
+        """
+    )
 
     fig = px.density_heatmap(
     df,
@@ -440,92 +538,6 @@ with tab3:
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-
-    st.subheader("🗺️ Mapa Energético de Álava")
-
-    st.markdown("""
-    Este mapa representa el score energético medio de cada municipio.
-
-    - 🟢 Verde = municipios más eficientes
-    - 🟡 Amarillo = eficiencia media
-    - 🔴 Rojo = municipios menos eficientes
-    """)
-
-    ranking_mapa = (
-        df.groupby("Municipio")
-        .agg(
-            Score=("Score energético", "mean"),
-            Certificados=("Municipio", "count"),
-            Consumo=("Consumo anual", "mean"),
-            Emisiones=("Emisiones anuales", "mean")
-        )
-        .reset_index()
-    )
-
-    try:
-
-        geo = gpd.read_file("municipios_alava.geojson")
-
-        # IMPORTANTE:
-        # Cambiar MUNICIPIO por el nombre real
-        # de la columna que tenga el GeoJSON
-        geo["Municipio"] = geo["MUNICIPIO"]
-
-        geo = geo.merge(
-            ranking_mapa,
-            on="Municipio",
-            how="left"
-        )
-
-        m = folium.Map(
-            location=[42.85, -2.68],
-            zoom_start=8,
-            tiles="CartoDB Positron"
-        )
-
-        folium.Choropleth(
-            geo_data=geo,
-            data=geo,
-            columns=["Municipio", "Score"],
-            key_on="feature.properties.Municipio",
-            fill_color="RdYlGn",
-            fill_opacity=0.8,
-            line_opacity=0.4,
-            legend_name="Score energético medio"
-        ).add_to(m)
-
-        folium.GeoJson(
-            geo,
-            tooltip=folium.GeoJsonTooltip(
-                fields=[
-                    "Municipio",
-                    "Score",
-                    "Certificados",
-                    "Consumo",
-                    "Emisiones"
-                ],
-                aliases=[
-                    "Municipio:",
-                    "Score:",
-                    "Certificados:",
-                    "Consumo medio:",
-                    "Emisiones medias:"
-                ]
-            )
-        ).add_to(m)
-
-        st_folium(
-            m,
-            width=1200,
-            height=700
-        )
-
-    except Exception as e:
-
-        st.error(
-            f"Error cargando el mapa: {e}"
-        )
 
 # ==================================================
 # TAB 4 - CONSUMO
@@ -564,6 +576,13 @@ with tab4:
     st.plotly_chart(fig, width='stretch')
 
     st.subheader("Consumo vs Emisiones")
+    st.markdown(    
+    """
+    Este gráfico muestra la relación entre el consumo anual y las emisiones de CO2 de los edificios.
+    Permite identificar patrones y correlaciones entre ambos parámetros, así como detectar edificios con consumos
+    y emisiones atípicas.   
+    """
+    ) 
 
     fig = px.scatter(
         df,
@@ -578,6 +597,12 @@ with tab4:
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Distribución consumo")
+    st.markdown(    
+    """
+    Este histograma muestra la distribución del consumo anual de los edificios.
+    Permite observar la frecuencia de los diferentes niveles de consumo y detectar posibles valores atípicos.    
+    """
+    )   
 
     st.plotly_chart(
         px.histogram(df, x="Consumo anual", nbins=40),
@@ -585,6 +610,12 @@ with tab4:
     )
 
     st.subheader("Distribución emisiones")
+    st.markdown(    
+    """ 
+    Este histograma muestra la distribución de las emisiones de CO2 de los edificios.
+    Aquí también se puede observar la frecuencia y detectar posibles valores atípicos.   
+    """
+    )
 
     st.plotly_chart(
         px.histogram(df, x="Emisiones anuales", nbins=40),
@@ -598,6 +629,14 @@ with tab4:
 
 with tab5:
 
+    st.subheader("Tipos de vivienda")
+    st.markdown(    
+    """ 
+    Esta visualización muestra la distribución de los diferentes tipos de edificios en Álava.
+    Permite identificar qué tipos de edificios son más comunes y cómo se distribuyen en términos de eficiencia energética.
+    """
+    )
+
     tipos = df["Tipo edificio"].value_counts().reset_index()
     tipos.columns = ["Tipo edificio", "Cantidad"]
 
@@ -605,6 +644,15 @@ with tab5:
         px.bar(tipos, x="Tipo edificio", y="Cantidad", text_auto=True),
         use_container_width=True
     )
+
+    st.subheader("Consumo y emisiones por tipo de edificio")
+    st.markdown(    
+    """ 
+    Esta visualización muestra la relación entre el tipo de edificio y su consumo anual y emisiones de CO2.
+    Aquí se puede observar elimpacto ambiental, permitiendo comparar el desempeño energético de los diferentes tipos de edificios y detectar cuáles son más eficientes
+    """
+    )
+
 
     col1, col2 = st.columns(2)
 
@@ -625,6 +673,16 @@ with tab5:
 # ==================================================
 
 with tab6:
+
+    st.subheader("Gráfico de energías")
+    st.markdown(    
+    """ 
+    Esta visualización muestra la distribución de los tipos de energía utilizados para calefacción y agua caliente sanitaria (ACS) en los edificios de Álava.
+    
+    De una manera sencilla permite identificar cuáles son las fuentes de energía más comunes y cómo se distribuyen entre los edificios, lo que puede ayudar a entender el impacto ambiental y la eficiencia energética de cada tipo de energía.
+    """
+    )
+
 
     calefaccion = df["Cal. Tipo Energia"].value_counts().head(10).reset_index()
     calefaccion.columns = ["Energía", "Cantidad"]
@@ -653,6 +711,12 @@ with tab6:
 with tab7:
 
     st.subheader("Correlación entre variables")
+    st.markdown(    
+    """
+    En este apartado se muestra la matriz de correlación entre las variables numéricas del dataset.
+    Se puede observar relaciones lineales entre las variables y detectar posibles patrones o dependencias.
+    """
+    )    
 
     numericas = df.select_dtypes(include="number")
     numericas = numericas.loc[:, numericas.nunique() > 1]
@@ -669,6 +733,14 @@ with tab7:
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Resumen estadístico")
+    st.markdown(
+    """
+    A continuación se muestra un resumen estadístico de las variables numéricas del dataset filtrado.
+
+    Se incluyen medidas como la media, desviación estándar, valores mínimos y máximos, así como los percentiles 25, 50 y 75.    
+    """
+    )
+
     st.dataframe(numericas.describe(), use_container_width=True)
 
 
@@ -679,6 +751,13 @@ with tab7:
 with tab8:
 
     st.subheader("Ranking energético")
+    st.markdown(
+    """ 
+    A continuación se muestra un ranking de los municipios de Álava según su score energético promedio.
+
+    Permite identificar qué municipios tienen un mejor desempeño en términos de eficiencia energética y cuáles necesitan mejorar.
+    """
+    )   
 
     ranking = (
         df.groupby("Municipio")
@@ -731,7 +810,13 @@ with tab8:
 with tab9:
 
     st.subheader("Datos filtrados")
-
+    st.markdown(
+    """
+    En esta sección se muestran los datos filtrados según los criterios seleccionados en la barra lateral.
+    Se puede visualizar la información de los certificados energéticos de los edificios en Álava y descargar el dataset filtrado para su análisis posterior.
+    """
+    )   
+    
     st.dataframe(df, use_container_width=True)
 
     csv = df.to_csv(index=False).encode("utf-8")
