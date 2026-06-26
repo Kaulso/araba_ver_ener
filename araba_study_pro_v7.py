@@ -338,7 +338,7 @@ with tab2:
         text_auto=True
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with tab2:
 
@@ -362,7 +362,7 @@ with tab2:
         text_auto=True
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     emisiones = df["Calificación energ. emisiones"].value_counts().reset_index()
     emisiones.columns = ["Calificación", "Cantidad"]
@@ -376,7 +376,7 @@ with tab2:
         text_auto=True
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # ==================================================
 # TAB 3 - MUNICIPIOS
@@ -407,7 +407,7 @@ with tab3:
         text_auto=True
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.divider()
 
@@ -457,7 +457,7 @@ with tab3:
 
     if not mapa.empty:
 
-        fig_map = px.scatter_mapbox(
+        fig_map = px.scatter_map(
             mapa,
             lat="lat",
             lon="lon",
@@ -477,7 +477,7 @@ with tab3:
                 "lon": -2.68
             },
             height=650,
-            mapbox_style="carto-positron"
+            map_style="carto-positron"
         )
 
         fig_map.update_layout(
@@ -486,7 +486,7 @@ with tab3:
 
         st.plotly_chart(
             fig_map,
-            use_container_width=True
+            width="stretch"
         )
 
     else:
@@ -518,7 +518,7 @@ with tab3:
         aspect="auto"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.subheader("Mapa de calor: Consumo vs Emisiones")
     st.markdown(
@@ -537,7 +537,7 @@ with tab3:
     color_continuous_scale="Turbo"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # ==================================================
 # TAB 4 - CONSUMO
@@ -594,7 +594,7 @@ with tab4:
         # ❌ sin trendline para evitar dependencia statsmodels
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.subheader("Distribución consumo")
     st.markdown(    
@@ -606,7 +606,7 @@ with tab4:
 
     st.plotly_chart(
         px.histogram(df, x="Consumo anual", nbins=40),
-        use_container_width=True
+        width="stretch"
     )
 
     st.subheader("Distribución emisiones")
@@ -619,7 +619,7 @@ with tab4:
 
     st.plotly_chart(
         px.histogram(df, x="Emisiones anuales", nbins=40),
-        use_container_width=True
+        width="stretch"
     )
 
 
@@ -642,7 +642,7 @@ with tab5:
 
     st.plotly_chart(
         px.bar(tipos, x="Tipo edificio", y="Cantidad", text_auto=True),
-        use_container_width=True
+        width="stretch"
     )
 
     st.subheader("Consumo y emisiones por tipo de edificio")
@@ -659,13 +659,13 @@ with tab5:
     with col1:
         st.plotly_chart(
             px.box(df, x="Tipo edificio", y="Consumo anual"),
-            use_container_width=True
+            width="stretch"
         )
 
     with col2:
         st.plotly_chart(
             px.box(df, x="Tipo edificio", y="Emisiones anuales"),
-            use_container_width=True
+            width="stretch"
         )
 
 # ==================================================
@@ -695,13 +695,13 @@ with tab6:
     with col1:
         st.plotly_chart(
             px.pie(calefaccion, names="Energía", values="Cantidad"),
-            use_container_width=True
+            width="stretch"
         )
 
     with col2:
         st.plotly_chart(
             px.pie(acs, names="Energía", values="Cantidad"),
-            use_container_width=True
+            width="stretch"
         )
 
 # ==================================================
@@ -730,7 +730,7 @@ with tab7:
         color_continuous_scale="Blues"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.subheader("Resumen estadístico")
     st.markdown(
@@ -741,7 +741,7 @@ with tab7:
     """
     )
 
-    st.dataframe(numericas.describe(), use_container_width=True)
+    st.dataframe(numericas.describe(), width="stretch")
 
 
 # ==================================================
@@ -795,12 +795,12 @@ with tab8:
             text_auto=".1f",
             color_continuous_scale="RdYlGn"
         ),
-        use_container_width=True
+        width="stretch"
     )
 
     st.dataframe(
         ranking.round(2),
-        use_container_width=True
+        width="stretch"
     )
 
 # ==================================================
@@ -817,7 +817,7 @@ with tab9:
     """
     )   
     
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
 
     csv = df.to_csv(index=False).encode("utf-8")
 
