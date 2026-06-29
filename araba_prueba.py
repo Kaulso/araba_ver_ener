@@ -275,6 +275,8 @@ def menu():
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
+
+        /* Banner superior */
         .purple-banner {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
@@ -285,6 +287,7 @@ def menu():
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
             margin-bottom: 30px;
         }
+
         .purple-banner h1 {
             color: white !important;
             margin: 0;
@@ -292,7 +295,44 @@ def menu():
             font-weight: 700;
             letter-spacing: -0.5px;
         }
+
+        /* Tarjetas del menú */
+        .menu-card {
+            background-color: #2F5D9F;
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .menu-card:hover {
+            background-color: #3C73BF;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-top: 12px;
+        }
+
+        .menu-description {
+            font-size: 13px;
+            color: #DCE6F2;
+            margin-top: 10px;
+            line-height: 1.5;
+            min-height: 45px;
+        }
     </style>
+
     <div class="purple-banner">
         <h1>📊 Dashboard Energético de Álava</h1>
     </div>
@@ -300,30 +340,77 @@ def menu():
 
     mostrar_kpis()
 
-    st.subheader("🚦Índice de contenidos")
+    st.subheader("🚦 Índice de contenidos")
 
     tarjetas = [
-        ("Resumen", "📊", "resumen"),
-        ("Municipios", "🌍", "municipios"),
-        ("Consumo", "📈", "consumo"),
-        ("Tipología", "🏠", "tipologia"),
-        ("Energías", "⚡", "energias"),
-        ("Correlaciones", "🔍", "correlaciones"),
-        ("Ranking", "🏆", "ranking"),
-        ("Datos", "📋", "datos"),
+        (
+            "Resumen",
+            "📊",
+            "resumen",
+            "Visualización de la calificación energética de edificios."
+        ),
+        (
+            "Municipios",
+            "🌍",
+            "municipios",
+            "Análisis de la distribución de edificios por municipios."
+        ),
+        (
+            "Consumo",
+            "📈",
+            "consumo",
+            "Estudio del consumo energético y sus indicadores."
+        ),
+        (
+            "Tipología",
+            "🏠",
+            "tipologia",
+            "Clasificación de edificios según su tipología."
+        ),
+        (
+            "Energías",
+            "⚡",
+            "energias",
+            "Fuentes de energía utilizadas y su distribución."
+        ),
+        (
+            "Correlaciones",
+            "🔍",
+            "correlaciones",
+            "Relación entre variables energéticas y constructivas."
+        ),
+        (
+            "Ranking",
+            "🏆",
+            "ranking",
+            "Comparativa y clasificación de municipios."
+        ),
+        (
+            "Datos",
+            "📋",
+            "datos",
+            "Consulta y exploración de la base de datos."
+        ),
     ]
 
     cols = st.columns(4)
-    for i, (titulo, icono, key) in enumerate(tarjetas):
+
+    for i, (titulo, icono, key, descripcion) in enumerate(tarjetas):
         with cols[i % 4]:
+
             st.markdown(f"""
             <div class="menu-card">
-                <div style="font-size:32px;">{icono}</div>
+                <div style="font-size:40px;">{icono}</div>
                 <div class="menu-title">{titulo}</div>
+                <div class="menu-description">{descripcion}</div>
             </div>
             """, unsafe_allow_html=True)
 
-            if st.button("Abrir", key=f"btn_{key}"):
+            if st.button(
+                "Abrir",
+                key=f"btn_{key}",
+                use_container_width=True
+            ):
                 st.session_state.seccion = key
                 st.rerun()
 
@@ -344,10 +431,9 @@ if st.session_state.seccion == "menu":
     st.subheader("❓¿Por que es importante este estudio?")
     st.markdown(
         """
-        Bienvenido al dashboard de certificados energéticos de Álava. 
-        A lo largo de este estudio podrá ver el análisis de los datos de eficiencia energética de edificios en la provincia y cómo se distribuyen los certificados por municipio, tipo de edificio, año de construcción y superficie habitable. 
+        Este estudio permite comprender el estado actual de la eficiencia energética de Álava. A través de esta herramienta, el usuario podrá ver el análisis de los datos de eficiencia energética de edificios en la provincia y cómo se distribuyen los certificados por municipio, tipo de edificio, año de construcción y superficie habitable. 
         
-        El usuario puede interactuar con los filtros en la barra lateral para explorar los datos según sus necesidades. Además, se presentan visualizaciones gráficas y estadísticas que permiten comprender mejor el estado energético de los edificios en Álava.
+        El usuario puede interactuar con los filtros en la barra lateral para explorar los datos según sus necesidades. Además, se presentan visualizaciones gráficas y estadísticas que permiten comprender mejor el estado energético de los edificios de esta provincia del Pais Vasco.
         """
     )
 
