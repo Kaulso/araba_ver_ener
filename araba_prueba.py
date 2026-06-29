@@ -331,6 +331,34 @@ def menu():
             line-height: 1.5;
             min-height: 45px;
         }
+        
+        /* Botón Abrir */
+        div.stButton > button {
+            background-color: white;
+            color: #2F5D9F;
+            border: 2px solid #2F5D9F;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        /* Al pasar el ratón */
+        div.stButton > button:hover {
+            background-color: #EAF2FF;
+            color: #1F4E79;
+            border-color: #1F4E79;
+        }
+
+        /* Al hacer clic */
+        div.stButton > button:active {
+            background-color: #D6E6FF;
+        }
+
+        /* Cuando el botón tiene el foco */
+        div.stButton > button:focus {
+            box-shadow: none;
+        }
     </style>
 
     <div class="purple-banner">
@@ -413,6 +441,7 @@ def menu():
             ):
                 st.session_state.seccion = key
                 st.rerun()
+
 
 def page(title):
     if st.button("⬅ Volver al menú"):
