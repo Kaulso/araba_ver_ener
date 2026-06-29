@@ -362,7 +362,7 @@ def menu():
     </style>
 
     <div class="purple-banner">
-        <h1>📊 Dashboard Energético de Álava</h1>
+        <h1>📊 DASHBOARD ENERGÉTICO DE ÁLAVA</h1>
     </div>
     """, unsafe_allow_html=True)
 
