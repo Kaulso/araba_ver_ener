@@ -448,7 +448,19 @@ def page(title):
         st.session_state.seccion = "menu"
         st.rerun()
 
-    st.subheader(title)
+    st.markdown(f"""
+    <div style="
+        background:#2F5D9F;
+        color:white;
+        padding:18px;
+        border-radius:10px;
+        text-align:center;
+        margin:10px 0 25px 0;
+    ">
+        <h1 style="margin:0;">{title}</h1>
+    </div>
+    """, unsafe_allow_html=True)
+
     mostrar_kpis()
 
 # ==================================================
