@@ -833,31 +833,33 @@ elif st.session_state.seccion == "consumo":
 
     st.plotly_chart(fig, width="stretch")
 
-    st.subheader("Distribución consumo")
-    st.markdown(    
+    st.subheader("Distribución de consumo y emisiones")
+    st.markdown(
     """
-    Este histograma muestra la distribución del consumo anual de los edificios.
-    Permite observar la frecuencia de los diferentes niveles de consumo y detectar posibles valores atípicos.    
-    """
-    )   
-
-    st.plotly_chart(
-        px.histogram(df, x="Consumo anual", nbins=40),
-        width="stretch"
-    )
-
-    st.subheader("Distribución emisiones")
-    st.markdown(    
-    """ 
-    Este histograma muestra la distribución de las emisiones de CO2 de los edificios.
-    Aquí también se puede observar la frecuencia y detectar posibles valores atípicos.   
+    Los siguientes histogramas muestran la distribución del consumo anual y de las emisiones de CO₂ de los edificios.
+    Permiten observar la frecuencia de los diferentes niveles de consumo y emisiones, así como detectar posibles valores atípicos.
     """
     )
 
-    st.plotly_chart(
-        px.histogram(df, x="Emisiones anuales", nbins=40),
-        width="stretch"
-    )
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Distribución consumo**")
+        fig_consumo = px.histogram(
+            df,
+            x="Consumo anual",
+            nbins=40
+        )
+        st.plotly_chart(fig_consumo, width="stretch")
+
+    with col2:
+        st.markdown("**Distribución emisiones**")
+        fig_emisiones = px.histogram(
+            df,
+            x="Emisiones anuales",
+            nbins=40
+        )
+        st.plotly_chart(fig_emisiones, width="stretch")
 
 elif st.session_state.seccion == "tipologia":
     page("🏠 Tipología")
